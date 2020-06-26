@@ -1,20 +1,24 @@
 package main
 
 import (
+	"goapi/config"
+	"goapi/context/usuario"
+	"goapi/helpers/httpresult"
+
 	"github.com/gofiber/fiber"
-	config "github.com/thiagozulato/goapi/Config"
 )
 
 func main() {
 	app := fiber.New()
 
-	app.Get("/api/v1", func(ctx *fiber.Ctx) {
-		ctx.JSON(&fiber.Map{
-			"sucesso": true,
-		})
-	})
+	api := app.Group("/api")
+	v1 := api.Group("/v1")
 
-	port := config.Config("PORT")
+	usuario.Rotas(v1)
+
+	app.Use(httpresult.NotFound)
+
+	port := config.Get("SERVER_PORT")
 
 	if err := app.Listen(port); err != nil {
 		panic(err)

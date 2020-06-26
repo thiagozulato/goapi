@@ -1,14 +1,26 @@
 package config
 
-import "os"
+import (
+	"fmt"
+	"log"
+	"os"
 
-// Config recupera configuraçoes a partir de variaveis de ambiente
-func Config(key string) string {
-	port := os.Getenv(key)
+	"github.com/joho/godotenv"
+)
 
-	if port == "" {
-		port = "5000"
+var (
+	goEnv = os.Getenv("GO_ENV")
+)
+
+// Get recupera configuraçoes a partir de variaveis de ambiente
+func Get(key string) string {
+	if goEnv == "" {
+		goEnv = "development"
 	}
 
-	return port
+	if err := godotenv.Load(fmt.Sprintf(".env.%s", goEnv)); err != nil {
+		log.Panic("Variáveis de ambiente não foram carregadas")
+	}
+
+	return os.Getenv(key)
 }
